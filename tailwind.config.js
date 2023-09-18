@@ -4,7 +4,11 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        kolas: "#533278",
+      },
+    },
   },
   plugins: [require("flowbite/plugin")],
 }

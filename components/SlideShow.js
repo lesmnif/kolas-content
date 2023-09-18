@@ -8,9 +8,47 @@ import { toast } from "react-hot-toast"
 import Image from "next/image"
 import * as AspectRatio from "@radix-ui/react-aspect-ratio"
 
+const testingImages = [
+  { url: "0", duration: 5000 },
+  { url: "1", duration: 3000 },
+  { url: "2", duration: 1000 },
+  { url: "3", duration: 1000 },
+  { url: "4", duration: 3000 },
+  { url: "5", duration: 10000 },
+  { url: "6", duration: 10000 },
+  { url: "7", duration: 1000 },
+  { url: "8", duration: 1000 },
+  // Add more images with their respective durations
+]
+
 const Slideshow = ({ supabase }) => {
   const [images, setImages] = useState([])
   const [photoUrl, setPhotoUrl] = useState("")
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentDuration, setCurrentDuration] = useState(
+    testingImages[currentIndex]?.duration
+  )
+
+  const handleChange = () => {
+    if (currentIndex === 8) {
+      setCurrentIndex(0)
+      setCurrentDuration(testingImages[0].duration)
+      return
+    }
+    console.log(
+      "those are my duration and index before",
+      currentDuration,
+      currentIndex
+    )
+    setCurrentDuration(testingImages[currentIndex + 1].duration)
+    setCurrentIndex((prevIndex) => prevIndex + 1)
+    console.log(
+      "those are my duration and index and after",
+      currentDuration,
+      currentIndex
+    )
+  }
+
   const Cdn_URL =
     "https://ivgsvflymqeuiibnrerz.supabase.co/storage/v1/object/public/images/"
 
@@ -24,21 +62,9 @@ const Slideshow = ({ supabase }) => {
           order: "asc",
         },
       })
+    console.log("dafuc homie", data)
     if (data) {
       setImages(data)
-      // make a list of Promises that will download the blob using the name we got
-      //   const downloads = data.map(({ name }) =>
-      //     supabase.storage.from("images").download(`kolas-arden/${name}`, {
-      //       transform: {
-      //         resize: "contain",
-      //       },
-      //     })
-      //   )
-      //   // use Promise.all to download all the blobs in the list, concurrently
-      //   const blobs = await Promise.all(downloads)
-
-      //   // use map to tranform the blobs into URLs
-      //   const urls = blobs.map(({ data }) => URL.createObjectURL(data))
     }
   }
 
@@ -51,8 +77,9 @@ const Slideshow = ({ supabase }) => {
   //These are custom properties for zoom effect while slide-show
   const zoomInProperties = {
     scale: 1,
-    duration: 1000,
+    duration: currentDuration,
     transitionDuration: 250,
+    onChange: () => handleChange(),
     infinite: true,
     prevArrow: (
       <div className="ml-10 top-40 md:top-72">
@@ -70,7 +97,7 @@ const Slideshow = ({ supabase }) => {
     try {
       const photoUrl = await supabase.storage
         .from("images")
-        .getPublicUrl("kolas-arden/image1.png")
+        .getPublicUrl("Kolas Arden/image1.png")
 
       setPhotoUrl(photoUrl.data.publicUrl)
 
@@ -115,16 +142,20 @@ const Slideshow = ({ supabase }) => {
       {/* <div onClick={getPhoto}>XDDDDDDDDDDDDDDD</div>
       <input type="file" id="fileInput" accept=".png, .jpg, .jpeg" /> */}
       {/* <img src={photoUrl} /> */}
-      <Zoom {...zoomInProperties}>
-        {images.map((each, index) => (
+      <Zoom {...zoomInProperties} pauseOnHover={false}>
+        {testingImages.map((each, index) => (
           <div
             key={index}
             className="flex justify-center md:items-center items-start w-screen h-screen relative"
           >
             <img
+              className="w-screen h-screen"
+              src={`/images/p1hafe27a1s2trie1j5cdkvc9n4-${each.url}.png`}
+            />
+            {/* <img
               className="w-screen"
               src={`${Cdn_URL}kolas-arden/${each.name}`}
-            />
+            /> */}
             {/* <h1 className="absolute md:top-60 top-24 inset-x-1/4 text-center z-10 md:text-6xl text-4xl bold text-white">
               Hello, Nik
             </h1>
