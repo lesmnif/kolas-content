@@ -3,8 +3,6 @@ import { useState, useEffect } from "react"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import Slideshow from "../components/SlideShow"
 
-
-
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(true)
 
@@ -26,12 +24,10 @@ export default function SignInPage() {
     return () => subscription.unsubscribe()
   }, [])
 
-
-
-
   return (
     <div>
-      <div>
+      <Slideshow />
+      {/* <div>
         {isLoading ? (
           <div>this is the loader</div>
         ) : !session ? (
@@ -39,7 +35,7 @@ export default function SignInPage() {
         ) : (
           <Slideshow supabase={supabase} />
         )}
-      </div>
+      </div> */}
     </div>
   )
 }

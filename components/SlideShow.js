@@ -21,7 +21,7 @@ const testingImages = [
   // Add more images with their respective durations
 ]
 
-const Slideshow = ({ supabase }) => {
+const Slideshow = ({  }) => {
   const [images, setImages] = useState([])
   const [photoUrl, setPhotoUrl] = useState("")
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -52,25 +52,25 @@ const Slideshow = ({ supabase }) => {
   const Cdn_URL =
     "https://ivgsvflymqeuiibnrerz.supabase.co/storage/v1/object/public/images/"
 
-  const fetchAvatar = async () => {
-    const { data, error } = await supabase.storage
-      .from("images")
-      .list("kolas-arden/", {
-        limit: 10,
-        sortBy: {
-          column: "name",
-          order: "asc",
-        },
-      })
-    console.log("dafuc homie", data)
-    if (data) {
-      setImages(data)
-    }
-  }
+  // const fetchAvatar = async () => {
+  //   const { data, error } = await supabase.storage
+  //     .from("images")
+  //     .list("kolas-arden/", {
+  //       limit: 10,
+  //       sortBy: {
+  //         column: "name",
+  //         order: "asc",
+  //       },
+  //     })
+  //   console.log("dafuc homie", data)
+  //   if (data) {
+  //     setImages(data)
+  //   }
+  // }
 
-  useEffect(() => {
-    fetchAvatar()
-  }, [])
+  // useEffect(() => {
+  //   fetchAvatar()
+  // }, [])
 
   //Array of Images
 
@@ -93,49 +93,49 @@ const Slideshow = ({ supabase }) => {
     ),
   }
 
-  const getPhoto = async () => {
-    try {
-      const photoUrl = await supabase.storage
-        .from("images")
-        .getPublicUrl("Kolas Arden/image1.png")
+  // const getPhoto = async () => {
+  //   try {
+  //     const photoUrl = await supabase.storage
+  //       .from("images")
+  //       .getPublicUrl("Kolas Arden/image1.png")
 
-      setPhotoUrl(photoUrl.data.publicUrl)
+  //     setPhotoUrl(photoUrl.data.publicUrl)
 
-      console.log("this is my photoUrl", photoUrl)
+  //     console.log("this is my photoUrl", photoUrl)
 
-      // setPhotoUrl(photoUrl.data.publicUrl)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  //     // setPhotoUrl(photoUrl.data.publicUrl)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
-  useEffect(() => {
-    getPhoto()
-  }, [])
+  // useEffect(() => {
+  //   getPhoto()
+  // }, [])
 
-  const updatePhoto = async () => {
-    const fileInput = document.getElementById("fileInput")
-    const file = fileInput.files[0]
+  // const updatePhoto = async () => {
+  //   const fileInput = document.getElementById("fileInput")
+  //   const file = fileInput.files[0]
 
-    if (!file) {
-      console.error("No file selected.")
-      return
-    }
+  //   if (!file) {
+  //     console.error("No file selected.")
+  //     return
+  //   }
 
-    try {
-      const { data, error } = await supabase.storage
-        .from("images")
-        .upload("kolas-arden/image5.png", file)
+  //   try {
+  //     const { data, error } = await supabase.storage
+  //       .from("images")
+  //       .upload("kolas-arden/image5.png", file)
 
-      if (error) {
-        toast.error("Error uploading image:", error)
-      } else {
-        toast.success("Image uploaded successfully")
-      }
-    } catch (error) {
-      toast.error("Error uploading image:", error)
-    }
-  }
+  //     if (error) {
+  //       toast.error("Error uploading image:", error)
+  //     } else {
+  //       toast.success("Image uploaded successfully")
+  //     }
+  //   } catch (error) {
+  //     toast.error("Error uploading image:", error)
+  //   }
+  // }
 
   return (
     <div className="w-full h-screen">
