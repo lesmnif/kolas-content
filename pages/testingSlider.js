@@ -37,9 +37,7 @@ export default function SignInPage() {
         ) : !session ? (
           <SignIn supabaseClient={supabase} />
         ) : (
-          // <Slideshow supabase={supabase} />
-          <Slideshow />
-
+          <Slideshow supabase={supabase} />
         )}
       </div>
     </div>

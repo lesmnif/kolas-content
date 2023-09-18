@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 //These are Third party packages for smooth slideshow
 import { Zoom } from "react-slideshow-image"
 import "react-slideshow-image/dist/styles.css"
@@ -11,17 +11,19 @@ import * as AspectRatio from "@radix-ui/react-aspect-ratio"
 const testingImages = [
   { url: "0", duration: 5000 },
   { url: "1", duration: 3000 },
+  { url: "/kolas_video.mp4", duration: 5000, isVideo: true },
   { url: "2", duration: 1000 },
   { url: "3", duration: 1000 },
   { url: "4", duration: 3000 },
   { url: "5", duration: 10000 },
   { url: "6", duration: 10000 },
   { url: "7", duration: 1000 },
-  { url: "8", duration: 1000 },
+  // { url: "8", duration: 1000 },
+  { url: "/blockchain.mp4", duration: 5000, isVideo: true },
   // Add more images with their respective durations
 ]
 
-const Slideshow = ({  }) => {
+const Slideshow = ({ supabase }) => {
   const [images, setImages] = useState([])
   const [photoUrl, setPhotoUrl] = useState("")
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -29,24 +31,15 @@ const Slideshow = ({  }) => {
     testingImages[currentIndex]?.duration
   )
 
+
   const handleChange = () => {
-    if (currentIndex === 8) {
+    if (currentIndex === 9) {
       setCurrentIndex(0)
       setCurrentDuration(testingImages[0].duration)
       return
     }
-    console.log(
-      "those are my duration and index before",
-      currentDuration,
-      currentIndex
-    )
     setCurrentDuration(testingImages[currentIndex + 1].duration)
     setCurrentIndex((prevIndex) => prevIndex + 1)
-    console.log(
-      "those are my duration and index and after",
-      currentDuration,
-      currentIndex
-    )
   }
 
   const Cdn_URL =
@@ -148,20 +141,22 @@ const Slideshow = ({  }) => {
             key={index}
             className="flex justify-center md:items-center items-start w-screen h-screen relative"
           >
-            <img
-              className="w-screen h-screen"
-              src={`/images/p1hafe27a1s2trie1j5cdkvc9n4-${each.url}.png`}
-            />
-            {/* <img
-              className="w-screen"
-              src={`${Cdn_URL}kolas-arden/${each.name}`}
-            /> */}
-            {/* <h1 className="absolute md:top-60 top-24 inset-x-1/4 text-center z-10 md:text-6xl text-4xl bold text-white">
-              Hello, Nik
-            </h1>
-            <p className="absolute md:top-80 top-40 inset-x-1/4 text-center z-10 md:text-2xl text-xl bold text-white">
-              Everything you can imagine is real.
-            </p> */}
+            {each.isVideo ? (
+              <div>
+                <video
+                  controls
+                  className="w-screen h-screen"
+                >
+                  <source src={`/images${each.url}`} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            ) : (
+              <img
+                className="w-screen h-screen"
+                src={`/images/p1hafe27a1s2trie1j5cdkvc9n4-${each.url}.png`}
+              />
+            )}
           </div>
         ))}
       </Zoom>
