@@ -98,11 +98,11 @@ const Slideshow = ({ supabase }) => {
     transitionDuration: 250,
     onChange: () => handleChange(),
     infinite: true,
-    prevArrow: (
-      <div className="ml-10 top-40 md:top-72">
-        <ArrowLeftIcon className="h-8 w-8 text-black cursor-pointer" />
-      </div>
-    ),
+    // prevArrow: (
+    //   <div className="ml-10 top-40 md:top-72">
+    //     <ArrowLeftIcon className="h-8 w-8 text-black cursor-pointer" />
+    //   </div>
+    // ),
     nextArrow: (
       <div className="mr-10 top-40 md:top-72">
         <ArrowRightIcon className="h-8 w-8 text-black cursor-pointer" />
