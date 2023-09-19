@@ -7,11 +7,12 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid"
 import { toast } from "react-hot-toast"
 import Image from "next/image"
 import * as AspectRatio from "@radix-ui/react-aspect-ratio"
+import ReactPlayer from "react-player"
 
 const testingImages = [
   { url: "0", duration: 5000 },
   { url: "1", duration: 3000 },
-  { url: "/kolas_video.mp4", duration: 5000, isVideo: true },
+  { url: "/kolas_video.mp4", duration: 161000, isVideo: true },
   { url: "2", duration: 1000 },
   { url: "3", duration: 1000 },
   { url: "4", duration: 3000 },
@@ -19,7 +20,7 @@ const testingImages = [
   { url: "6", duration: 10000 },
   { url: "7", duration: 1000 },
   // { url: "8", duration: 1000 },
-  { url: "/blockchain.mp4", duration: 5000, isVideo: true },
+  { url: "/blockchain.mp4", duration: 9999999, isVideo: true },
   // Add more images with their respective durations
 ]
 
@@ -30,16 +31,39 @@ const Slideshow = ({ supabase }) => {
   const [currentDuration, setCurrentDuration] = useState(
     testingImages[currentIndex]?.duration
   )
-
+  const [isPlaying, setIsPlaying] = useState(
+    new Array(testingImages.length).fill(false)
+  )
+  const [isCarouselPlaying, setIsCarouselPlaying] = useState(false)
+  const [isVideo, setIsVideo] = useState(false)
+  // Function to toggle the playing state of a specific video
+  const togglePlaying = (index) => {
+    const newIsPlaying = [...isPlaying]
+    newIsPlaying[index] = !newIsPlaying[index]
+    setIsPlaying(newIsPlaying)
+  }
 
   const handleChange = () => {
+    if (isVideo) {
+      setIsVideo(false)
+      return
+    }
     if (currentIndex === 9) {
       setCurrentIndex(0)
       setCurrentDuration(testingImages[0].duration)
-      return
+    } else {
+      setCurrentDuration(testingImages[currentIndex + 1].duration)
+      setCurrentIndex((prevIndex) => prevIndex + 1)
     }
-    setCurrentDuration(testingImages[currentIndex + 1].duration)
-    setCurrentIndex((prevIndex) => prevIndex + 1)
+
+    if (testingImages[currentIndex]?.isVideo) {
+      togglePlaying(currentIndex)
+    }
+
+    // Check if the current index corresponds to a video and play it
+    if (testingImages[currentIndex + 1]?.isVideo) {
+      togglePlaying(currentIndex + 1)
+    }
   }
 
   const Cdn_URL =
@@ -135,31 +159,45 @@ const Slideshow = ({ supabase }) => {
       {/* <div onClick={getPhoto}>XDDDDDDDDDDDDDDD</div>
       <input type="file" id="fileInput" accept=".png, .jpg, .jpeg" /> */}
       {/* <img src={photoUrl} /> */}
-      <Zoom {...zoomInProperties} pauseOnHover={false}>
-        {testingImages.map((each, index) => (
-          <div
-            key={index}
-            className="flex justify-center md:items-center items-start w-screen h-screen relative"
+      {!isCarouselPlaying ? (
+        <div className="flex items-center h-screen text-center justify-center">
+          <button
+            className=" w-1/4 items-center hover:cursor-pointer justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            onClick={() => setIsCarouselPlaying(true)}
           >
-            {each.isVideo ? (
-              <div>
-                <video
-                  controls
+            Start playing
+          </button>
+        </div>
+      ) : (
+        <Zoom {...zoomInProperties} pauseOnHover={false}>
+          {testingImages.map((each, index) => (
+            <div
+              key={index}
+              className="flex justify-center md:items-center items-start w-screen h-screen relative"
+            >
+              {each.isVideo ? (
+                <ReactPlayer
                   className="w-screen h-screen"
-                >
-                  <source src={`/images${each.url}`} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            ) : (
-              <img
-                className="w-screen h-screen"
-                src={`/images/p1hafe27a1s2trie1j5cdkvc9n4-${each.url}.png`}
-              />
-            )}
-          </div>
-        ))}
-      </Zoom>
+                  playing={isPlaying[index]}
+                  onEnded={() => {
+                    setIsVideo(true)
+                    handleChange()
+                  }}
+                  // Use the playing state for this video
+                  width={"100%"}
+                  height={"100%"}
+                  url={index === currentIndex + 1 ? "" : `/images${each.url}`}
+                />
+              ) : (
+                <img
+                  className="w-screen h-screen"
+                  src={`/images/p1hafe27a1s2trie1j5cdkvc9n4-${each.url}.png`}
+                />
+              )}
+            </div>
+          ))}
+        </Zoom>
+      )}
     </div>
   )
 }

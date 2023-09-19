@@ -4,6 +4,8 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import Slideshow from "../components/SlideShow"
 import UploadPage from "../components/Upload"
 import ChooseContent from "../components/ChooseContent"
+import { Carousel } from "react-responsive-carousel"
+import ReactPlayer from "react-player"
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -26,32 +28,34 @@ export default function SignInPage() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const coverImages = [
-    {
-      id: 1,
-      url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI",
-    },
-    {
-      id: 2,
-      url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI",
-    },
-    {
-      id: 3,
-      url: "https://fastly.picsum.photos/id/866/200/300.jpg?hmac=rcadCENKh4rD6MAp6V_ma-AyWv641M4iiOpe1RyFHeI",
-    },
+  const testingImages = [
+    { url: "0", duration: 5000 },
+    { url: "1", duration: 3000 },
+    { url: "/kolas_video.mp4", duration: 5000, isVideo: true },
+    { url: "2", duration: 1000 },
+    { url: "3", duration: 1000 },
+    { url: "4", duration: 3000 },
+    { url: "5", duration: 10000 },
+    { url: "6", duration: 10000 },
+    { url: "7", duration: 1000 },
+    // { url: "8", duration: 1000 },
+    { url: "/blockchain.mp4", duration: 24000, isVideo: true },
+    // Add more images with their respective durations
   ]
 
   return (
     <div>
-      <button onClick={() => supabase.auth.signOut()}>XD</button>
       <div>
-        {isLoading ? (
-          <div>this is the loader</div>
-        ) : !session ? (
-          <SignIn supabaseClient={supabase} />
-        ) : (
-          <ChooseContent supabase={supabase} coverImages={coverImages} />
-        )}
+        {testingImages.map((each, index) => (
+          <Carousel key={index} showArrows={true}>
+            <div>
+              <img
+                src={`/images/p1hafe27a1s2trie1j5cdkvc9n4-${each.url}.png`}
+              />
+              <p className="legend">Legend 1</p>
+            </div>
+          </Carousel>
+        ))}
       </div>
     </div>
   )
