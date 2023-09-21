@@ -23,48 +23,71 @@ export default function UploadPage({ supabase }) {
     fileInputRef.current.value = null // Clear the file input value
   }
 
-  const uploadImage = async () => {
+  const uploadImages = async (files) => {
     if (!selectedStore) {
       return toast.error("You must select a store")
     }
-
-    const fileInput = document.getElementById("fileInput")
-    const file = fileInput.files[0]
-
-    if (!file) {
-      toast.error("No file selected.")
-      return
+    console.log("dafuc", fileInputRef.current.value)
+    if (fileInputRef.current.value === "") {
+      return toast.error("You must upload at least one file")
     }
-
     // Set uploading to true to disable the button
     setUploading(true)
-    toast.loading("Loading...", {
+    const loadingToast = toast.loading("Loading...", {
       iconTheme: {
         primary: "#fff",
         secondary: "#000",
       },
     })
+
     try {
       const fileType =
         selectedTab === "Upload Image" ? "images" : "videos" || "images"
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        if (!file) {
+          toast.error("No file selected.")
+          continue // Skip to the next file
+        }
+        const number = i + 1
 
-      const { data, error } = await supabase.storage
-        .from(fileType)
-        .upload(`${selectedStore}/${file.name}`, file)
+        const { data, error } = await supabase.storage
+          .from(fileType)
+          .upload(`${selectedStore}/${file.name}`, file)
 
-      if (error) {
-        toast.remove()
-        toast.error(error.message)
-      } else {
-        toast.remove()
+        if (error) {
+          toast.error(
+            `Error uploading ${fileType.slice(0, -1)} "${file.name}" : ${
+              error.message
+            }`
+          )
+        } else if (files.length === 1) {
+          toast.remove()
+          toast.success(
+            `${fileType === "images" ? "Image" : "Video"} uploaded successfully`
+          )
+        } else if (files.length > 1) {
+          // Display individual success toasts for multiple files
+          toast.success(
+            `${
+              fileType === "images" ? "Image" : "Video"
+            } ${number} uploaded successfully`
+          )
+        }
+      }
+      if (files.length > 1) {
         toast.success(
-          `${fileType === "images" ? "Image" : "Video"} uploaded successfully`
+          `Finished uploading the ${
+            fileType === "images" ? "images" : "videos"
+          } `
         )
       }
     } catch (error) {
-      toast.remove()
       toast.error(error.message)
     } finally {
+      toast.remove(loadingToast)
+      // Reset the input file value
+      fileInputRef.current.value = ""
       // Set uploading back to false to enable the button
       setUploading(false)
     }
@@ -72,7 +95,8 @@ export default function UploadPage({ supabase }) {
 
   const onSubmit = async (event) => {
     event.preventDefault()
-    uploadImage()
+    const files = fileInputRef.current.files
+    uploadImages(files)
   }
 
   return (
@@ -162,6 +186,7 @@ export default function UploadPage({ supabase }) {
                       ? ".png, .jpg, .jpeg"
                       : ".mp4, .avi, .mov, .mkv"
                   }
+                  multiple // Allow multiple file selection
                 />
               </div>
               <button

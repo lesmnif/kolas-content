@@ -1,7 +1,6 @@
 import SignIn from "../components/SignIn"
 import { useState, useEffect } from "react"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
-import Slideshow from "../components/SlideShow"
 import UploadPage from "../components/Upload"
 
 export default function SignInPage() {
@@ -27,7 +26,7 @@ export default function SignInPage() {
 
   return (
     <div>
-      <button onClick={() => supabase.auth.signOut()}>XD</button>
+      {/* <button onClick={() => supabase.auth.signOut()}>XD</button> */}
       <div>
         {isLoading ? (
           <div>this is the loader</div>

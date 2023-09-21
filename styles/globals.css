@@ -14,6 +14,10 @@ input {
   all: unset;
 }
 
+select option:hover {
+  cursor: pointer;
+}
+
 
 .TabsRoot {
   display: flex;

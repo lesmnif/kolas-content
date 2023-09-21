@@ -1,7 +1,7 @@
 import SignIn from "../components/SignIn"
 import { useState, useEffect } from "react"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
-import Slideshow from "../components/SlideShow"
+import Slideshow from "../components/PreSlider"
 import UploadPage from "../components/Upload"
 import ChooseContent from "../components/ChooseContent"
 import { Carousel } from "react-responsive-carousel"

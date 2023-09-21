@@ -1,4 +1,22 @@
-export default function UnsplashImages({ images, selected, setSelected, Cdn_URL, selectedStore }) {
+export default function UnsplashImages({
+  images,
+  selected,
+  setSelected,
+  Cdn_URL,
+  selectedStore,
+}) {
+  // Helper function to check if an image is selected
+  const isImageSelected = (image) => selected.includes(image)
+
+  // Function to toggle selection of an image
+  const toggleImageSelection = (image) => {
+    if (isImageSelected(image)) {
+      setSelected(selected.filter((selectedImage) => selectedImage !== image))
+    } else {
+      setSelected([...selected, image])
+    }
+  }
+
   return (
     <ul
       role="list"
@@ -8,11 +26,11 @@ export default function UnsplashImages({ images, selected, setSelected, Cdn_URL,
         <li
           key={image.id}
           className={"relative"}
-          onClick={() => setSelected(image)}
+          onClick={() => toggleImageSelection(image)}
         >
           <div
             className={
-              selected?.id === image?.id
+              isImageSelected(image)
                 ? "group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 ring-4 ring-kolas ring-opacity-80 ring-offset-2 ring-offset-gray-100"
                 : "group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100"
             }
