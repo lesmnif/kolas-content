@@ -15,9 +15,28 @@ export default function UploadPageAdmin({ supabase, session }) {
 
   const [selectedStore, setSelectedStore] = useState(null)
   const [selectedTab, setSelectedTab] = useState(tabs[0].name)
+  const [duration, setDuration] = useState("")
+  const [startDate, setStartDate] = useState(getCurrentDate())
+  const [finishDate, setFinishDate] = useState(getNextDay())
 
+  function getCurrentDate() {
+    const currentDate = new Date()
+    const year = currentDate.getFullYear()
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0")
+    const day = String(currentDate.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }
 
-  
+  // Helper function to get the next day's date in YYYY-MM-DD format
+  function getNextDay() {
+    const currentDate = new Date()
+    currentDate.setDate(currentDate.getDate() + 1)
+    const year = currentDate.getFullYear()
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0")
+    const day = String(currentDate.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }
+
   console.log("whatsupppp", selectedStore)
 
   const handleTabClick = (tabName) => {
@@ -32,6 +51,19 @@ export default function UploadPageAdmin({ supabase, session }) {
     console.log("dafuc", fileInputRef.current.value)
     if (fileInputRef.current.value === "") {
       return toast.error("You must upload at least one file")
+    }
+    const parsedStartDate = new Date(startDate)
+    const parsedFinishDate = new Date(finishDate)
+
+    // Check if finish date is earlier than start date
+    if (parsedFinishDate < parsedStartDate) {
+      toast.error("Finish date cannot be earlier than the start date.")
+      return
+    }
+
+    if (!duration) {
+      toast.error("You must set a duration time")
+      return
     }
     // Set uploading to true to disable the button
     setUploading(true)
@@ -115,6 +147,14 @@ export default function UploadPageAdmin({ supabase, session }) {
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center py-6 sm:px-6 lg:px-8">
+        <button
+          onClick={() => window.location.replace(location.origin)}
+          disabled={uploading} // Disable the button when uploading is true
+          className="flex hover:cursor-pointer justify-center px-16 ml-5 text-center rounded-md bg-kolas bg-opacity-90 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          View content
+          {/* Show "Uploading..." while uploading */}
+        </button>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div
             onClick={() => window.location.replace(location.origin)}
@@ -122,11 +162,11 @@ export default function UploadPageAdmin({ supabase, session }) {
           >
             <img src="/Kolas_Logo.svg" width="100" alt="Kolas" />
           </div>
-          <h2 className="mt-6 text-center text-2xl leading-9 tracking-tight text-gray-900 font-semibold ">
+          <h2 className="mt-3 text-center text-2xl leading-9 tracking-tight text-gray-900 font-semibold ">
             Upload Content
           </h2>
         </div>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+        <div className="mt-5 sm:mx-auto sm:w-full sm:max-w-[480px]">
           <div className="bg-white px-6 py-6 shadow sm:rounded-lg sm:px-12 border  border-slate-200">
             <TabsPage
               selectedTab={selectedTab}
@@ -153,13 +193,13 @@ export default function UploadPageAdmin({ supabase, session }) {
                 <div className="mt-2">
                   <label
                     htmlFor="stores"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-900 text-center dark:text-white"
                   >
                     Select the store you want to upload your content to
                   </label>
                   <select
-                    id="countries"
-                    className="bg-gray-50 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    id="stores"
+                    className="bg-gray-100 text-center border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     onChange={(event) => setSelectedStore(event.target.value)}
                     value={selectedStore || ""}
                   >
@@ -191,6 +231,59 @@ export default function UploadPageAdmin({ supabase, session }) {
                   /> */}
                 </div>
               </div>
+              <div className="mt-2">
+                <label
+                  htmlFor="duration"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Duration (in seconds)
+                </label>
+                <input
+                  type="number"
+                  id="duration"
+                  name="duration"
+                  value={duration}
+                  onChange={(event) => setDuration(event.target.value)}
+                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Enter duration"
+                />
+              </div>
+
+              <div className="mt-2">
+                <label
+                  htmlFor="startDate"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  name="startDate"
+                  value={startDate}
+                  onChange={(event) => setStartDate(event.target.value)}
+                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Select start date"
+                />
+              </div>
+
+              <div className="mt-2">
+                <label
+                  htmlFor="finishDate"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Finish Date
+                </label>
+                <input
+                  type="date"
+                  id="finishDate"
+                  name="finishDate"
+                  value={finishDate}
+                  onChange={(event) => setFinishDate(event.target.value)}
+                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Select finish date"
+                />
+              </div>
               <div className="flex">
                 <input
                   ref={fileInputRef}
@@ -218,16 +311,6 @@ export default function UploadPageAdmin({ supabase, session }) {
                 {/* Show "Uploading..." while uploading */}
               </button>
             </form>
-          </div>
-          <div className="flex justify-center text-center">
-            <button
-              onClick={() => window.location.replace(location.origin)}
-              disabled={uploading} // Disable the button when uploading is true
-              className="flex hover:cursor-pointer mt-10 px-16 ml-5 text-center justify-center rounded-md bg-kolas bg-opacity-90 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              View content
-              {/* Show "Uploading..." while uploading */}
-            </button>
           </div>
         </div>
       </div>

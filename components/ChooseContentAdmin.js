@@ -31,7 +31,6 @@ export default function ChooseContentAdmin({
     supabase.auth.signOut()
   }
 
-
   useEffect(() => {
     const fetchSupabaseData = async () => {
       try {
@@ -177,7 +176,7 @@ export default function ChooseContentAdmin({
                       <button
                         type="button"
                         onClick={() => window.location.replace("/upload")}
-                        className="rounded bg-white inline-flex px-3 py-1.5 hover:cursor-pointer border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 justify-end"
+                        className="rounded bg-gray-100 inline-flex px-3 py-1.5 hover:cursor-pointer border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 justify-end"
                       >
                         Upload
                       </button>{" "}
