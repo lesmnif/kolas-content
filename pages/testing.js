@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
 
 import { Carousel } from "react-responsive-carousel"
+import Loader from "../components/Loader"
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -39,20 +40,5 @@ export default function SignInPage() {
     // Add more images with their respective durations
   ]
 
-  return (
-    <div>
-      <div>
-        {testingImages.map((each, index) => (
-          <Carousel key={index} showArrows={true}>
-            <div>
-              <img
-                src={`/images/p1hafe27a1s2trie1j5cdkvc9n4-${each.url}.png`}
-              />
-              <p className="legend">Legend 1</p>
-            </div>
-          </Carousel>
-        ))}
-      </div>
-    </div>
-  )
+  return <Loader />
 }

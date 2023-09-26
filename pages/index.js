@@ -2,6 +2,7 @@ import SignIn from "../components/SignIn"
 import { useState, useEffect } from "react"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
 import Slideshow from "../components/PreSlider"
+import Loader from "../components/Loader"
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -28,11 +29,11 @@ export default function SignInPage() {
     <div>
       <div>
         {isLoading ? (
-          <div>this is the loader</div>
+          <Loader />
         ) : !session ? (
           <SignIn supabaseClient={supabase} />
         ) : (
-          <Slideshow supabase={supabase} />
+          <Slideshow supabase={supabase} session={session} />
         )}
       </div>
     </div>

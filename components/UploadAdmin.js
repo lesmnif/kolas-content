@@ -9,17 +9,16 @@ const tabs = [
   { name: "Upload Video", href: "video", current: false },
 ]
 
-export default function UploadPage({
-  supabase,
-  session,
-  userEmail,
-  selectedStoreValue,
-}) {
+export default function UploadPageAdmin({ supabase, session }) {
   const fileInputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
+
+  const [selectedStore, setSelectedStore] = useState(null)
   const [selectedTab, setSelectedTab] = useState(tabs[0].name)
 
-  console.log("whatsupppp", selectedStoreValue)
+
+  
+  console.log("whatsupppp", selectedStore)
 
   const handleTabClick = (tabName) => {
     setSelectedTab(tabName)
@@ -27,7 +26,7 @@ export default function UploadPage({
   }
 
   const uploadImages = async (files) => {
-    if (!selectedStoreValue) {
+    if (!selectedStore) {
       return toast.error("You must select a store")
     }
     console.log("dafuc", fileInputRef.current.value)
@@ -56,7 +55,7 @@ export default function UploadPage({
 
         const { data, error } = await supabase.storage
           .from(fileType)
-          .upload(`${selectedStoreValue}/${file.name}`, file)
+          .upload(`${selectedStore}/${file.name}`, file)
 
         if (error) {
           toast.error(
@@ -154,40 +153,32 @@ export default function UploadPage({
                 <div className="mt-2">
                   <label
                     htmlFor="stores"
-                    className="block mb-2 text-sm font-medium text-center text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    You&apos;ll be uploading your content to
+                    Select the store you want to upload your content to
                   </label>
-                  <div
+                  <select
                     id="countries"
-                    className="bg-gray-50 text-center border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    value={selectedStoreValue}
+                    className="bg-gray-50 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(event) => setSelectedStore(event.target.value)}
+                    value={selectedStore || ""}
                   >
-                    {userEmail === "kolas@blumenfeld.com" && (
-                      <option value="Kolas Blumenfeld">Kolas Blumenfeld</option>
+                    {selectedStore === null && (
+                      <option value="">Choose a store...</option>
                     )}
-                    {userEmail === "kolas@mainave.com" && (
-                      <option value="Kolas Main Ave">Kolas Main Ave</option>
-                    )}
-                    {userEmail === "kolas@fruitridge66.com" && (
-                      <option value="Kolas Fruitridge - 66">
-                        Kolas Fruitridge - 66
-                      </option>
-                    )}
-                    {userEmail === "kolas@florin.com" && (
-                      <option value="Kolas Florin Perkins">
-                        Kolas Florin Perkins
-                      </option>
-                    )}
-                    {userEmail === "kolas@fruitridgesouth.com" && (
-                      <option value="Kolas Fruitridge - South Watt">
-                        Kolas Fruitridge - South Watt
-                      </option>
-                    )}
-                    {userEmail === "kolas@arden.com" && (
-                      <option value="Kolas Arden">Kolas Arden</option>
-                    )}  
-                  </div>
+                    <option value="Kolas Blumenfeld">Kolas Blumenfeld</option>
+                    <option value="Kolas Main Ave">Kolas Main Ave</option>
+                    <option value="Kolas Fruitridge - 66">
+                      Kolas Fruitridge - 66
+                    </option>
+                    <option value="Kolas Florin Perkins">
+                      Kolas Florin Perkins
+                    </option>
+                    <option value="Kolas Fruitridge - South Watt">
+                      Kolas Fruitridge - South Watt
+                    </option>
+                    <option value="Kolas Arden">Kolas Arden</option>
+                  </select>
                   {/* <input
                     id="email"
                     name="email"
