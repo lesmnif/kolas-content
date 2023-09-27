@@ -16,7 +16,7 @@ export default function ChooseContentAdmin({
   setImages: setSupabaseData,
 }) {
   const Cdn_URL =
-    "https://ivgsvflymqeuiibnrerz.supabase.co/storage/v1/object/public/images/"
+    "https://ivgsvflymqeuiibnrerz.supabase.co/storage/v1/object/public/"
 
   console.log("this is my session", session)
 
@@ -30,50 +30,24 @@ export default function ChooseContentAdmin({
   const handleClick = async () => {
     supabase.auth.signOut()
   }
+  const currentDate = new Date() // Get the current date and time
+  const currentDateStr = currentDate.toISOString().split("T")[0]
 
   useEffect(() => {
     const fetchSupabaseData = async () => {
       try {
         toast.loading("Loading...")
         setSupabaseData([])
-        const { data: imageData, error: imageError } = await supabase.storage
-          .from("images")
-          .list(`${selectedStore}/`, {
-            limit: 25,
-            sortBy: {
-              column: "name",
-              order: "asc",
-            },
-          })
+        const { data, error } = await supabase
+          .from("bucket_data")
+          .select()
+          .eq("store", selectedStore)
+          .order("created_at", { ascending: false })
+          .filter("start_date", "lte", currentDateStr) // Only items with startDate in the past or present
+          .filter("finish_date", "gte", currentDateStr) // Only items with finishDate in the future or present
 
-        const { data: videoData, error: videoError } = await supabase.storage
-          .from("videos")
-          .list(`${selectedStore}/`, {
-            limit: 25,
-            sortBy: {
-              column: "name",
-              order: "asc",
-            },
-          })
-
-        if (imageData) {
-          // Add the duration prop to each image in the imageData array
-          const imagesWithDuration = imageData.map((image) => ({
-            ...image,
-            type: "image", // Add a type property to indicate it's an image
-            duration: Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000,
-          }))
-          setSupabaseData((prevData) => [...prevData, ...imagesWithDuration])
-        }
-
-        if (videoData) {
-          // Add the duration prop to each video in the videoData array
-          const videosWithDuration = videoData.map((video) => ({
-            ...video,
-            type: "video", // Add a type property to indicate it's a video
-            duration: Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000,
-          }))
-          setSupabaseData((prevData) => [...prevData, ...videosWithDuration])
+        if (data) {
+          setSupabaseData(data)
         }
       } catch (error) {
         toast.error(error.message)

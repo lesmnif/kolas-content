@@ -46,7 +46,7 @@ export default function UploadPage({
   }
 
   const uploadImages = async (files) => {
-    if (!selectedStore) {
+    if (!selectedStoreValue) {
       return toast.error("You must select a store")
     }
     console.log("dafuc", fileInputRef.current.value)
@@ -88,7 +88,7 @@ export default function UploadPage({
 
         const { data, error } = await supabase.storage
           .from(fileType)
-          .upload(`${selectedStore}/${file.name}`, file)
+          .upload(`${selectedStoreValue}/${file.name}`, file)
 
         if (error) {
           toast.error(
@@ -96,8 +96,21 @@ export default function UploadPage({
               error.message
             }`
           )
+          continue
         } else if (files.length === 1) {
           toast.remove()
+          const { data: DatabaseData, error: DatabaseError } = await supabase
+            .from("bucket_data")
+            .insert([
+              {
+                src: `${fileType}/${data.path}`,
+                duration: duration,
+                start_date: parsedStartDate,
+                finish_date: parsedFinishDate,
+                store: selectedStoreValue,
+                isVideo: fileType === "videos" ? true : false,
+              },
+            ])
           toast.success(
             `${
               fileType === "images" ? "Image" : "Video"
@@ -108,6 +121,18 @@ export default function UploadPage({
           )
         } else if (files.length > 1) {
           // Display individual success toasts for multiple files
+          const { data: DatabaseData, error: DatabaseError } = await supabase
+            .from("bucket_data")
+            .insert([
+              {
+                src: `${fileType}/${data.path}`,
+                duration: duration,
+                start_date: parsedStartDate,
+                finish_date: parsedFinishDate,
+                store: selectedStoreValue,
+                isVideo: fileType === "videos" ? true : false,
+              },
+            ])
           toast.success(
             `${
               fileType === "images" ? "Image" : "Video"

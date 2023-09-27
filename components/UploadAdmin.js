@@ -95,8 +95,21 @@ export default function UploadPageAdmin({ supabase, session }) {
               error.message
             }`
           )
+          continue
         } else if (files.length === 1) {
           toast.remove()
+          const { data: DatabaseData, error: DatabaseError } = await supabase
+            .from("bucket_data")
+            .insert([
+              {
+                src: `${fileType}/${data.path}`,
+                duration: duration,
+                start_date: parsedStartDate,
+                finish_date: parsedFinishDate,
+                store: selectedStore,
+                isVideo: fileType === "videos" ? true : false,
+              },
+            ])
           toast.success(
             `${
               fileType === "images" ? "Image" : "Video"
@@ -107,6 +120,19 @@ export default function UploadPageAdmin({ supabase, session }) {
           )
         } else if (files.length > 1) {
           // Display individual success toasts for multiple files
+          const { data: DatabaseData, error: DatabaseError } = await supabase
+            .from("bucket_data")
+            .insert([
+              {
+                src: `${fileType}/${data.path}`,
+                duration: duration,
+                start_date: parsedStartDate,
+                finish_date: parsedFinishDate,
+                store: selectedStore,
+                isVideo: fileType === "videos" ? true : false,
+              },
+            ])
+          console.log("dafuc is going on homie", DatabaseData, DatabaseError)
           toast.success(
             `${
               fileType === "images" ? "Image" : "Video"

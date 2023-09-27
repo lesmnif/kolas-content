@@ -8,6 +8,16 @@ export default function UnsplashImages({
   // Function to check if an item is selected
   const isItemSelected = (item) => selected.includes(item)
 
+  function getLastPartOfPath(path) {
+    const parts = path.split("/")
+    if (parts.length > 0) {
+      return parts[parts.length - 1]
+    } else {
+      // If the input is empty or doesn't contain '/', return an empty string or handle it as needed.
+      return ""
+    }
+  }
+
   // Function to toggle selection of an item
   const toggleItemSelection = (item) => {
     if (isItemSelected(item)) {
@@ -17,10 +27,10 @@ export default function UnsplashImages({
     }
   }
 
+  const Cdn_Videos_Url =
+    "https://ivgsvflymqeuiibnrerz.supabase.co/storage/v1/object/public/"
 
-  
-
-  const Cdn_Videos_Url = "https://ivgsvflymqeuiibnrerz.supabase.co/storage/v1/object/public/videos/"
+  console.log("dafuc homie", selected)
 
   return (
     <ul
@@ -33,7 +43,7 @@ export default function UnsplashImages({
           className={"relative"}
           onClick={() => toggleItemSelection(item)}
         >
-          {item.name.endsWith(".mp4") ? (
+          {item.isVideo ? (
             <div
               className={
                 isItemSelected(item)
@@ -42,7 +52,7 @@ export default function UnsplashImages({
               }
             >
               <video
-                src={`${Cdn_Videos_Url}${selectedStore}/${item.name}`}
+                src={`${Cdn_URL}${item.src}`}
                 alt="video"
                 className="object-cover pointer-events-none w-full h-24"
               />
@@ -64,7 +74,7 @@ export default function UnsplashImages({
             >
               <picture>
                 <img
-                  src={`${Cdn_URL}${selectedStore}/${item.name}`}
+                  src={`${Cdn_URL}${item.src}`}
                   alt="image"
                   className="object-cover pointer-events-none w-full h-24"
                 />
@@ -83,7 +93,7 @@ export default function UnsplashImages({
             </div>
           )}
           <p className="pointer-events-none mt-2 block truncate text-xs font-medium text-black">
-            {item.name}
+            {getLastPartOfPath(item.src)}
           </p>
         </li>
       ))}
