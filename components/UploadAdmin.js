@@ -9,14 +9,11 @@ const tabs = [
   { name: "Upload Video", href: "video", current: false },
 ]
 
-export default function UploadPage({
-  supabase,
-  session,
-  userEmail,
-  selectedStoreValue,
-}) {
+export default function UploadPageAdmin({ supabase, session }) {
   const fileInputRef = useRef(null)
   const [uploading, setUploading] = useState(false)
+
+  const [selectedStore, setSelectedStore] = useState(null)
   const [selectedTab, setSelectedTab] = useState(tabs[0].name)
   const [duration, setDuration] = useState("")
   const [startDate, setStartDate] = useState(getCurrentDate())
@@ -40,13 +37,15 @@ export default function UploadPage({
     return `${year}-${month}-${day}`
   }
 
+  console.log("whatsupppp", selectedStore)
+
   const handleTabClick = (tabName) => {
     setSelectedTab(tabName)
     fileInputRef.current.value = null // Clear the file input value
   }
 
   const uploadImages = async (files) => {
-    if (!selectedStoreValue) {
+    if (!selectedStore) {
       return toast.error("You must select a store")
     }
     console.log("dafuc", fileInputRef.current.value)
@@ -88,7 +87,7 @@ export default function UploadPage({
 
         const { data, error } = await supabase.storage
           .from(fileType)
-          .upload(`${selectedStoreValue}/${file.name}`, file)
+          .upload(`${selectedStore}/${file.name}`, file)
 
         if (error) {
           toast.error(
@@ -107,7 +106,7 @@ export default function UploadPage({
                 duration: duration,
                 start_date: parsedStartDate,
                 finish_date: parsedFinishDate,
-                store: selectedStoreValue,
+                store: selectedStore,
                 isVideo: fileType === "videos" ? true : false,
               },
             ])
@@ -129,10 +128,11 @@ export default function UploadPage({
                 duration: duration,
                 start_date: parsedStartDate,
                 finish_date: parsedFinishDate,
-                store: selectedStoreValue,
+                store: selectedStore,
                 isVideo: fileType === "videos" ? true : false,
               },
             ])
+          console.log("dafuc is going on homie", DatabaseData, DatabaseError)
           toast.success(
             `${
               fileType === "images" ? "Image" : "Video"
@@ -219,40 +219,32 @@ export default function UploadPage({
                 <div className="mt-2">
                   <label
                     htmlFor="stores"
-                    className="block mb-2 text-sm font-medium text-center text-gray-900 dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-900 text-center dark:text-white"
                   >
-                    You&apos;ll be uploading your content to
+                    Select the store you want to upload your content to
                   </label>
-                  <div
+                  <select
                     id="stores"
-                    className="bg-gray-100 text-center border  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    value={selectedStoreValue}
+                    className="bg-gray-100 text-center border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    onChange={(event) => setSelectedStore(event.target.value)}
+                    value={selectedStore || ""}
                   >
-                    {userEmail === "kolas@blumenfeld.com" && (
-                      <option value="Kolas Blumenfeld">Kolas Blumenfeld</option>
+                    {selectedStore === null && (
+                      <option value="">Choose a store...</option>
                     )}
-                    {userEmail === "kolas@mainave.com" && (
-                      <option value="Kolas Main Ave">Kolas Main Ave</option>
-                    )}
-                    {userEmail === "kolas@fruitridge66.com" && (
-                      <option value="Kolas Fruitridge - 66">
-                        Kolas Fruitridge - 66
-                      </option>
-                    )}
-                    {userEmail === "kolas@florin.com" && (
-                      <option value="Kolas Florin Perkins">
-                        Kolas Florin Perkins
-                      </option>
-                    )}
-                    {userEmail === "kolas@fruitridgesouth.com" && (
-                      <option value="Kolas Fruitridge - South Watt">
-                        Kolas Fruitridge - South Watt
-                      </option>
-                    )}
-                    {userEmail === "kolas@arden.com" && (
-                      <option value="Kolas Arden">Kolas Arden</option>
-                    )}
-                  </div>
+                    <option value="Kolas Blumenfeld">Kolas Blumenfeld</option>
+                    <option value="Kolas Main Ave">Kolas Main Ave</option>
+                    <option value="Kolas Fruitridge - 66">
+                      Kolas Fruitridge - 66
+                    </option>
+                    <option value="Kolas Florin Perkins">
+                      Kolas Florin Perkins
+                    </option>
+                    <option value="Kolas Fruitridge - South Watt">
+                      Kolas Fruitridge - South Watt
+                    </option>
+                    <option value="Kolas Arden">Kolas Arden</option>
+                  </select>
                   {/* <input
                     id="email"
                     name="email"
@@ -278,7 +270,7 @@ export default function UploadPage({
                   name="duration"
                   value={duration}
                   onChange={(event) => setDuration(event.target.value)}
-                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Enter duration"
                 />
               </div>
@@ -296,7 +288,7 @@ export default function UploadPage({
                   name="startDate"
                   value={startDate}
                   onChange={(event) => setStartDate(event.target.value)}
-                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Select start date"
                 />
               </div>
@@ -314,7 +306,7 @@ export default function UploadPage({
                   name="finishDate"
                   value={finishDate}
                   onChange={(event) => setFinishDate(event.target.value)}
-                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="bg-gray-100 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Select finish date"
                 />
               </div>
