@@ -42,7 +42,7 @@ export default function ChooseContentAdmin({
           .from("bucket_data")
           .select()
           .eq("store", selectedStore)
-          .order("created_at", { ascending: false })
+          .order("created_at", { ascending: true })
           .filter("start_date", "lte", currentDateStr) // Only items with startDate in the past or present
           .filter("finish_date", "gte", currentDateStr) // Only items with finishDate in the future or present
 
