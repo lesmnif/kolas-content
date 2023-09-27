@@ -105,7 +105,7 @@ export default function ChooseContentAdmin({
                       </label>
                       <select
                         id="stores"
-                        className="bg-gray-50 border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className="bg-gray-50 text-center border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         onChange={(event) =>
                           setSelectedStore(event.target.value)
                         }
@@ -145,17 +145,30 @@ export default function ChooseContentAdmin({
                       </button>
                     </div>
 
-                    <p className=" font-medium  text-center mt-5">
-                      Or else{" "}
-                      <button
-                        type="button"
-                        onClick={() => window.location.replace("/upload")}
-                        className="rounded bg-gray-100 inline-flex px-3 py-1.5 hover:cursor-pointer border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 justify-end"
-                      >
-                        Upload
-                      </button>{" "}
-                      more content
-                    </p>
+                    {supabaseData.length === 0 ? (
+                      <p className=" font-medium  text-center mt-5">
+                        Currently no content in this store, go{" "}
+                        <button
+                          type="button"
+                          onClick={() => window.location.replace("/upload")}
+                          className="rounded bg-gray-100 inline-flex px-3 py-1.5 hover:cursor-pointer border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 justify-end"
+                        >
+                          Upload
+                        </button>{" "}
+                      </p>
+                    ) : (
+                      <p className=" font-medium  text-center mt-5">
+                        Or else{" "}
+                        <button
+                          type="button"
+                          onClick={() => window.location.replace("/upload")}
+                          className="rounded bg-gray-100 inline-flex px-3 py-1.5 hover:cursor-pointer border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 justify-end"
+                        >
+                          Upload
+                        </button>{" "}
+                        more content
+                      </p>
+                    )}
 
                     {supabaseData.length !== 0 && (
                       <h1 className="block text-base mt-5 text-black font-semibold mb-6 text-center ">

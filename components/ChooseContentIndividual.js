@@ -103,7 +103,9 @@ export default function ChooseContentIndividual({
                 <div>
                   <div className="text-center">
                     <p className=" font-medium">
-                      You&apos;re currently visualizing content in
+                      {supabaseData.length === 0
+                        ? "You currently have no content in the following store"
+                        : "You're currently visualizing content in"}
                     </p>
                     <div className="mt-2">
                       <div
@@ -148,17 +150,29 @@ export default function ChooseContentIndividual({
                       </button>
                     </div>
 
-                    <p className=" font-medium  text-center mt-5">
-                      You can also{" "}
-                      <button
-                        type="button"
-                        onClick={() => window.location.replace("/upload")}
-                        className="rounded bg-gray-100 inline-flex px-3 py-1.5 hover:cursor-pointer border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 justify-end"
-                      >
-                        Upload
-                      </button>{" "}
-                      more content in that store
-                    </p>
+                    {supabaseData.length === 0 ? (
+                      <p className=" font-medium  text-center mt-5">
+                        <button
+                          type="button"
+                          onClick={() => window.location.replace("/upload")}
+                          className="rounded bg-gray-100 inline-flex px-3 py-1.5 hover:cursor-pointer border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 justify-end"
+                        >
+                          Upload
+                        </button>{" "}
+                      </p>
+                    ) : (
+                      <p className=" font-medium  text-center mt-5">
+                        You can also{" "}
+                        <button
+                          type="button"
+                          onClick={() => window.location.replace("/upload")}
+                          className="rounded bg-gray-100 inline-flex px-3 py-1.5 hover:cursor-pointer border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-200 justify-end"
+                        >
+                          Upload
+                        </button>{" "}
+                        more content in that store
+                      </p>
+                    )}
 
                     {supabaseData.length !== 0 && (
                       <h1 className="block text-base mt-5 text-black font-semibold mb-6 text-center ">
