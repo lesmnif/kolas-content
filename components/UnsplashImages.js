@@ -40,7 +40,7 @@ export default function UnsplashImages({
       {images.map((item, index) => (
         <li
           key={item.id}
-          className={"relative"}
+          className={"relative hover:cursor-pointer "}
           onClick={() => toggleItemSelection(item)}
         >
           {item.isVideo ? (

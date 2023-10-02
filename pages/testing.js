@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useSupabaseClient } from "@supabase/auth-helpers-react"
-
+import TestingSlider from "../components/TestingSlider"
 import { Carousel } from "react-responsive-carousel"
 import Loader from "../components/Loader"
 
@@ -40,5 +40,5 @@ export default function SignInPage() {
     // Add more images with their respective durations
   ]
 
-  return <Loader />
+  return <TestingSlider />
 }

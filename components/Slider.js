@@ -82,37 +82,62 @@ export default function Slider({
 
   return (
     <div className="w-full h-screen">
-      <Zoom {...zoomInProperties} pauseOnHover={false}>
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className="flex justify-center md:items-center items-start w-screen h-screen relative"
-          >
-            {image.isVideo ? (
-              <ReactPlayer
-                className="w-screen h-screen"
-                playing={
-                  (videoPlayingIndex === currentIndex && currentIndex === 0) ||
-                  isPlaying[index]
-                }
-                onEnded={() => {
-                  setIsVideo(true)
-                  handleChange()
-                }}
-                width={"100%"}
-                height={"100%"}
-                url={index === currentIndex ? `${Cdn_URL}${image.src}` : ""}
-              />
-            ) : (
-              <img
-                className="w-screen h-screen"
-                src={`${Cdn_URL}${image.src}`}
-                alt="image"
-              />
-            )}
-          </div>
-        ))}
-      </Zoom>
+      {images.length === 1 ? (
+        <div className="flex justify-center md:items-center items-start w-screen h-screen relative">
+          {images[0].isVideo ? (
+            <ReactPlayer
+              className="w-screen h-screen"
+              playing={true}
+              // onEnded={() => {
+              //   setIsVideo(true)
+              //   handleChange()
+              // }}
+              width={"100%"}
+              height={"100%"}
+              url={`${Cdn_URL}${images[0].src}`}
+            />
+          ) : (
+            <img
+              className="w-screen h-screen"
+              src={`${Cdn_URL}${images[0].src}`}
+              alt="image"
+            />
+          )}
+        </div>
+      ) : (
+        <Zoom {...zoomInProperties} pauseOnHover={false}>
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className="flex justify-center md:items-center items-start w-screen h-screen relative"
+            >
+              {image.isVideo ? (
+                <ReactPlayer
+                  className="w-screen h-screen"
+                  playing={
+                    (videoPlayingIndex === currentIndex &&
+                      currentIndex === 0) ||
+                    isPlaying[index]
+                  }
+                  onEnded={() => {
+                    setIsVideo(true)
+                    handleChange()
+                  }}
+                  width={"100%"}
+                  height={"100%"}
+                  url={index === currentIndex ? `${Cdn_URL}${image.src}` : ""}
+                />
+              ) : (
+                <img
+                  className="w-screen h-screen"
+                  src={`${Cdn_URL}${image.src}`}
+                  alt="image"
+                />
+              )}
+            </div>
+          ))}
+        </Zoom>
+      )}
     </div>
   )
 }

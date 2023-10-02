@@ -24,6 +24,10 @@ export default function ChooseContentIndividual({
   const [open, setOpen] = useState(false)
   // Function to handle "Start Reproduction" button click
   const handleStartReproduction = () => {
+    if (selected.length === 0) {
+      toast.error("You must select at least one image/video")
+      return
+    }
     setShowSlideShow(true)
   }
 
@@ -74,6 +78,12 @@ export default function ChooseContentIndividual({
 
     fetchSupabaseData()
   }, [])
+
+  useEffect(() => {
+    if (supabaseData) {
+      setSelected(supabaseData)
+    }
+  }, [supabaseData])
 
   console.log("this is my supabasedata", supabaseData)
 

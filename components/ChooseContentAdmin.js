@@ -24,6 +24,10 @@ export default function ChooseContentAdmin({
   const [open, setOpen] = useState(false)
   // Function to handle "Start Reproduction" button click
   const handleStartReproduction = () => {
+    if(selected.length === 0){
+      toast.error("You must select at least one image/video")
+      return
+    }
     setShowSlideShow(true)
   }
 
@@ -49,6 +53,7 @@ export default function ChooseContentAdmin({
         if (data) {
           setSupabaseData(data)
         }
+
       } catch (error) {
         toast.error(error.message)
       } finally {
@@ -67,6 +72,13 @@ export default function ChooseContentAdmin({
   }, [selectedStore, supabase, setSupabaseData])
 
   console.log("images and store", supabaseData, selectedStore)
+
+  useEffect(() => {
+    if(supabaseData){
+      setSelected(supabaseData)
+    }
+  }, [supabaseData, setSelected])
+
 
   console.log("selected", selected)
 

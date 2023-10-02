@@ -12,10 +12,6 @@ const Slideshow = ({ supabase, session }) => {
   const [selectedStore, setSelectedStore] = useState(null)
   const [images, setImages] = useState([])
 
-  useEffect(() => {
-    setSelected("")
-  }, [selectedStore])
-
   let selectedStoreValue = "" // Initialize selectedStoreValue variable
   const userEmail = session?.user?.email
 
