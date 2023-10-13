@@ -44,8 +44,29 @@ export default function UploadPageAdmin({ supabase, session }) {
     fileInputRef.current.value = null // Clear the file input value
   }
 
-  const uploadImages = async (files) => {
-    if (!selectedStore) {
+  const uploadImagesAllStores = async (files) => {
+    const allStores = [
+      "Kolas Blumenfeld",
+      "Kolas Main Ave",
+      "Kolas Fruitridge - 66",
+      "Kolas Florin Perkins",
+      "Kolas Fruitridge - South Watt",
+      "Kolas Arden",
+    ]
+    for (const store of allStores) {
+      console.log("dafuc", store)
+      await uploadImages(store, files)
+      toast.dismiss()
+      toast.success(`Finished Uploading content in ${store}`)
+    }
+    toast.success(`Uploaded to all stores successfully`, {
+      className: "text-center",
+    })
+    fileInputRef.current.value = ""
+  }
+
+  const uploadImages = async (store, files) => {
+    if (!store) {
       return toast.error("You must select a store")
     }
     console.log("dafuc", fileInputRef.current.value)
@@ -77,6 +98,7 @@ export default function UploadPageAdmin({ supabase, session }) {
     try {
       const fileType =
         selectedTab === "Upload Image" ? "images" : "videos" || "images"
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         if (!file) {
@@ -87,7 +109,7 @@ export default function UploadPageAdmin({ supabase, session }) {
 
         const { data, error } = await supabase.storage
           .from(fileType)
-          .upload(`${selectedStore}/${file.name}`, file)
+          .upload(`${store}/${file.name}-${getCurrentDate()}`, file)
 
         if (error) {
           toast.error(
@@ -106,7 +128,7 @@ export default function UploadPageAdmin({ supabase, session }) {
                 duration: duration,
                 start_date: parsedStartDate,
                 finish_date: parsedFinishDate,
-                store: selectedStore,
+                store: store,
                 isVideo: fileType === "videos" ? true : false,
               },
             ])
@@ -128,7 +150,7 @@ export default function UploadPageAdmin({ supabase, session }) {
                 duration: duration,
                 start_date: parsedStartDate,
                 finish_date: parsedFinishDate,
-                store: selectedStore,
+                store: store,
                 isVideo: fileType === "videos" ? true : false,
               },
             ])
@@ -158,16 +180,24 @@ export default function UploadPageAdmin({ supabase, session }) {
     } finally {
       toast.remove(loadingToast)
       // Reset the input file value
+      if (selectedStore === "All") {
+        setUploading(false)
+        return
+      }
       fileInputRef.current.value = ""
-      // Set uploading back to false to enable the button
       setUploading(false)
+      // Set uploading back to false to enable the button
     }
   }
 
   const onSubmit = async (event) => {
     event.preventDefault()
     const files = fileInputRef.current.files
-    uploadImages(files)
+    if (selectedStore === "All") {
+      uploadImagesAllStores(files)
+    } else {
+      uploadImages(selectedStore, files)
+    }
   }
 
   return (
@@ -232,6 +262,7 @@ export default function UploadPageAdmin({ supabase, session }) {
                     {selectedStore === null && (
                       <option value="">Choose a store...</option>
                     )}
+                    <option value="All">Upload ALL STORES</option>
                     <option value="Kolas Blumenfeld">Kolas Blumenfeld</option>
                     <option value="Kolas Main Ave">Kolas Main Ave</option>
                     <option value="Kolas Fruitridge - 66">
