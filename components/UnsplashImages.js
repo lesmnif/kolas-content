@@ -4,9 +4,10 @@ export default function UnsplashImages({
   setSelected,
   Cdn_URL,
   selectedStore,
+  handleClick,
 }) {
   // Function to check if an item is selected
-  const isItemSelected = (item) => selected.includes(item)
+  const isItemSelected = (item) => selected?.includes(item)
 
   function getLastPartOfPath(path) {
     const parts = path.split("/")
@@ -27,9 +28,6 @@ export default function UnsplashImages({
     }
   }
 
-  const Cdn_Videos_Url =
-    "https://ivgsvflymqeuiibnrerz.supabase.co/storage/v1/object/public/"
-
   console.log("dafuc homie", selected)
 
   return (
@@ -41,14 +39,16 @@ export default function UnsplashImages({
         <li
           key={item.id}
           className={"relative hover:cursor-pointer "}
-          onClick={() => toggleItemSelection(item)}
+          onClick={() =>
+            handleClick ? handleClick(item) : toggleItemSelection(item)
+          }
         >
           {item.isVideo ? (
             <div
               className={
                 isItemSelected(item)
                   ? "group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 ring-4 ring-kolas ring-opacity-80 ring-offset-2 ring-offset-gray-100 selected-item"
-                  : "group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100"
+                  : "group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 "
               }
             >
               <video
@@ -69,7 +69,7 @@ export default function UnsplashImages({
               className={
                 isItemSelected(item)
                   ? "group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 ring-4 ring-kolas ring-opacity-80 ring-offset-2 ring-offset-gray-100 selected-item"
-                  : "group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100"
+                  : "group aspect-w-10 aspect-h-7 block w-full overflow-hidden rounded-lg bg-gray-100 ring-1 ring-kolas ring-opacity-60 ring-offset-2 rign-offset-gray-100"
               }
             >
               <picture>

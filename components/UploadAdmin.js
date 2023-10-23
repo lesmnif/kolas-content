@@ -69,7 +69,6 @@ export default function UploadPageAdmin({ supabase, session }) {
     if (!store) {
       return toast.error("You must select a store")
     }
-    console.log("dafuc", fileInputRef.current.value)
     if (fileInputRef.current.value === "") {
       return toast.error("You must upload at least one file")
     }
@@ -203,7 +202,22 @@ export default function UploadPageAdmin({ supabase, session }) {
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center py-6 sm:px-6 lg:px-8">
-        <button
+      <p className="flex hover:cursor-pointer justify-between items-center mb-4 mx-4">
+      <button
+        type="button"
+        onClick={() => window.location.href = `${location.origin}/dashboard`}
+        className="rounded bg-white px-2 py-1 border-kolas text-medium font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
+      >
+        Dashboard
+      </button>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="rounded bg-white px-2 py-1 border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
+      >
+        Log out
+      </button>
+    </p>        <button
           onClick={() => window.location.replace(location.origin)}
           disabled={uploading} // Disable the button when uploading is true
           className="flex hover:cursor-pointer justify-center px-16 ml-5 text-center rounded-md bg-kolas bg-opacity-90 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

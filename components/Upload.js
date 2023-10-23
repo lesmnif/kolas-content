@@ -88,7 +88,10 @@ export default function UploadPage({
 
         const { data, error } = await supabase.storage
           .from(fileType)
-          .upload(`${selectedStoreValue}/${file.name}`, file)
+          .upload(
+            `${selectedStoreValue}/${file.name}-${getCurrentDate()}`,
+            file
+          )
 
         if (error) {
           toast.error(
@@ -173,6 +176,24 @@ export default function UploadPage({
   return (
     <>
       <div className="flex min-h-full flex-1 flex-col justify-center py-6 sm:px-6 lg:px-8">
+        <p className="flex hover:cursor-pointer justify-between items-center mb-4 mx-4">
+          <button
+            type="button"
+            onClick={() =>
+              (window.location.href = `${location.origin}/dashboard`)
+            }
+            className="rounded bg-white px-2 py-1 border-kolas text-medium font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
+          >
+            Dashboard
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="rounded bg-white px-2 py-1 border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
+          >
+            Log out
+          </button>
+        </p>{" "}
         <button
           onClick={() => window.location.replace(location.origin)}
           disabled={uploading} // Disable the button when uploading is true

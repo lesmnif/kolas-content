@@ -3,8 +3,9 @@ import UnsplashImages from "./UnsplashImages"
 import toast from "react-hot-toast"
 import Slider from "./Slider"
 import ModalSignOut from "./ModalSignOut"
+import ModifyModal from "./ModifyModal"
 
-export default function ChooseContentIndividual({
+export default function Dashboard({
   supabase,
   selected,
   setSelected,
@@ -21,7 +22,15 @@ export default function ChooseContentIndividual({
   console.log("this is my session", session)
 
   const [showSlideShow, setShowSlideShow] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+  const [currentImage, setCurrentImage] = useState("")
   const [open, setOpen] = useState(false)
+  const [newStartDate, setNewStartDate] = useState("")
+  const [newFinishDate, setNewFinishDate] = useState("")
+  const [newDuration, setNewDuration] = useState("")
+  const [uploadingDate, setUploadingDate] = useState(false)
+  const [uploadingDuration, setUploadingDuration] = useState(false)
+
   // Function to handle "Start Reproduction" button click
   const handleStartReproduction = () => {
     if (selected.length === 0) {
@@ -31,11 +40,121 @@ export default function ChooseContentIndividual({
     setShowSlideShow(true)
   }
 
+  async function handleDelete() {
+    if (window.confirm("Are you sure you want to delete this content")) {
+      const { data, error } = await supabase
+        .from("bucket_data")
+        .delete()
+        .eq("id", currentImage.id)
+
+      if (error) {
+        toast.error("Error deleting this content", error.message)
+      } else {
+        const updatedData = supabaseData.filter(
+          (item) => item.id !== currentImage.id
+        )
+        setSupabaseData(updatedData)
+
+        toast.success("Item deleted successfully")
+      }
+    }
+    setOpenModal(false)
+    return
+  }
+
+  async function updateItem(rowId, updatedData) {
+    const { data, error } = await supabase
+      .from("bucket_data")
+      .update(updatedData)
+      .eq("id", rowId)
+
+    if (error) {
+      toast.error("Error updating item:", error.message)
+    } else {
+      // Update the state to reflect the changes in the UI
+      const updatedSupabaseData = supabaseData.map((item) => {
+        if (item.id === rowId) {
+          // Merge the updated data with the existing item
+          const updatedItem = { ...item, ...updatedData }
+
+          // Check if 'start_date' exists in the updated data
+          if ("start_date" in updatedData) {
+            // Convert the 'start_date' to a string
+            updatedItem.start_date = new Date(updatedData.start_date)
+              .toISOString()
+              .split("T")[0]
+          }
+
+          // Check if 'finish_date' exists in the updated data
+          if ("finish_date" in updatedData) {
+            // Convert the 'finish_date' to a string
+            updatedItem.finish_date = new Date(updatedData.finish_date)
+              .toISOString()
+              .split("T")[0]
+          }
+
+          return updatedItem
+        }
+        return item
+      })
+
+      console.log("Updated Supabase Data:", updatedSupabaseData)
+
+      setSupabaseData(updatedSupabaseData)
+
+      toast.success("Item updated successfully")
+    }
+  }
+
+  const handleDurationUpdate = async () => {
+    if (!duration) {
+      toast.error("You must set a duration time")
+      return
+    }
+    setUploadingDuration(true)
+    const updatedData = {
+      duration: newDuration,
+    }
+
+    await updateItem(currentImage.id, updatedData)
+
+    setUploadingDuration(false)
+  }
+
+  const handleDateUpdate = async () => {
+    const parsedStartDate = new Date(newStartDate)
+    const parsedFinishDate = new Date(newFinishDate)
+
+    // Check if finish date is earlier than start date
+    if (parsedFinishDate < parsedStartDate) {
+      toast.error("Finish date cannot be earlier than the start date.")
+      return
+    }
+    setUploadingDate(true)
+
+    const updatedData = {
+      start_date: parsedStartDate,
+      finish_date: parsedFinishDate,
+    }
+
+    console.log("those are my params", currentImage.id, updatedData)
+
+    await updateItem(currentImage.id, updatedData)
+
+    setUploadingDate(false)
+  }
+
+  const handleModifyClick = async (image) => {
+    setNewStartDate(image.start_date)
+    setNewFinishDate(image.finish_date)
+    setNewDuration(image.duration)
+    setCurrentImage(image)
+    setOpenModal(true)
+  }
+
   const handleClick = async () => {
     supabase.auth.signOut()
   }
-
-  console.log("tis is my selected store", selectedStore)
 
   useEffect(() => {
     console.log(
@@ -43,12 +162,17 @@ export default function ChooseContentIndividual({
       selectedStore
     )
 
+    console.log("this is my selected image", currentImage)
+
     const currentDate = new Date() // Get the current date and time
     const currentDateStr = currentDate.toISOString().split("T")[0]
 
     const fetchSupabaseData = async () => {
       try {
-        console.log(currentDateStr)
+        console.log(
+          "tis is my selected store inside the fetcher",
+          selectedStore
+        )
         toast.loading("Loading...")
         setSupabaseData([])
         const { data, error } = await supabase
@@ -56,7 +180,7 @@ export default function ChooseContentIndividual({
           .select()
           .eq("store", selectedStore)
           .order("created_at", { ascending: true })
-          .filter("start_date", "lte", currentDateStr) // Only items with startDate in the past or present
+          // .filter("start_date", "lte", currentDateStr) // Only items with startDate in the past or present
           .filter("finish_date", "gte", currentDateStr) // Only items with finishDate in the future or present
 
         if (data) {
@@ -79,12 +203,6 @@ export default function ChooseContentIndividual({
     fetchSupabaseData()
   }, [])
 
-  useEffect(() => {
-    if (supabaseData) {
-      setSelected(supabaseData)
-    }
-  }, [supabaseData])
-
   console.log("this is my supabasedata", supabaseData)
 
   return (
@@ -93,25 +211,39 @@ export default function ChooseContentIndividual({
         <Slider images={selected} selectedStore={selectedStore} />
       ) : (
         <div>
-          <p className="mt-4">
-            <p className="flex hover:cursor-pointer justify-between items-center mb-4 mx-4">
-              <button
-                type="button"
-                onClick={() => window.location.href = `${location.origin}/dashboard`}
-                className="rounded bg-white px-2 py-1 border-kolas text-medium font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
-              >
-                Dashboard
-              </button>
-              <button
-                type="button"
-                onClick={() => setOpen(true)}
-                className="rounded bg-white px-2 py-1 border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
-              >
-                Log out
-              </button>
-            </p>{" "}
-          </p>
-
+          <ModifyModal
+            handleDelete={handleDelete}
+            uploadingDuration={uploadingDuration}
+            handleDurationUpdate={handleDurationUpdate}
+            uploadingDate={uploadingDate}
+            handleDateUpdate={handleDateUpdate}
+            open={openModal}
+            setOpen={setOpenModal}
+            newDuration={newDuration}
+            setNewDuration={setNewDuration}
+            image={currentImage}
+            Cdn_URL={Cdn_URL}
+            newStartDate={newStartDate}
+            newFinishDate={newFinishDate}
+            setNewStartDate={setNewStartDate}
+            setNewFinishDate={setNewFinishDate}
+          />
+          <p className="flex hover:cursor-pointer mt-4 justify-between items-center mb-4 mx-4">
+            <button
+              type="button"
+              onClick={() => (window.location.href = `${location.origin}`)}
+              className="rounded bg-white px-2 py-1 border-kolas text-medium font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
+            >
+              View content
+            </button>
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="rounded bg-white px-2 py-1 border border-kolas text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
+            >
+              Log out
+            </button>
+          </p>{" "}
           <div className="flex items-start sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
             <ModalSignOut
               open={open}
@@ -122,10 +254,13 @@ export default function ChooseContentIndividual({
               <div>
                 <div>
                   <div className="text-center">
-                    <p className=" font-medium">
+                    <p className="font-medium text-2xl text-black mb-10">
+                      DASHBOARD
+                    </p>
+                    <p className=" font-medium text-2xl text-kolas">
                       {supabaseData.length === 0
                         ? "You currently have no content in the following store"
-                        : "You're currently visualizing content in"}
+                        : "Click any image to edit or remove content"}
                     </p>
                     <div className="mt-2">
                       <div
@@ -193,23 +328,19 @@ export default function ChooseContentIndividual({
                         more content in that store
                       </p>
                     )}
-
-                    {supabaseData.length !== 0 && (
-                      <h1 className="block text-base mt-5 text-black font-semibold mb-6 text-center ">
-                        Choose Your Content
-                      </h1>
-                    )}
-
-                    <UnsplashImages
-                      Cdn_URL={Cdn_URL}
-                      selectedStore={selectedStore}
-                      images={supabaseData}
-                      selected={selected}
-                      setSelected={setSelected}
-                    />
+                    <p className="mt-10">
+                      <UnsplashImages
+                        Cdn_URL={Cdn_URL}
+                        selectedStore={selectedStore}
+                        images={supabaseData}
+                        selected={selected}
+                        handleClick={handleModifyClick}
+                        setSelected={setSelected}
+                      />
+                    </p>
                   </div>
                 </div>
-                {supabaseData.length !== 0 && (
+                {/* {supabaseData.length !== 0 && (
                   <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-1 sm:gap-3 sm:grid-flow-row-dense">
                     <button
                       type="submit"
@@ -219,7 +350,7 @@ export default function ChooseContentIndividual({
                       Start Reproduction
                     </button>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </div>

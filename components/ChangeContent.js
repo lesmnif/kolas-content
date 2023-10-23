@@ -4,7 +4,7 @@ import toast from "react-hot-toast"
 import Slider from "./Slider"
 import ModalSignOut from "./ModalSignOut"
 
-export default function ChooseContentAdmin({
+export default function ChangeContent({
   supabase,
   selected,
   setSelected,
@@ -34,12 +34,21 @@ export default function ChooseContentAdmin({
   const handleClick = async () => {
     supabase.auth.signOut()
   }
-  const currentDate = new Date() // Get the current date and time
-  const currentDateStr = currentDate.toISOString().split("T")[0]
+
+  console.log("tis is my selected store", selectedStore)
 
   useEffect(() => {
+    console.log(
+      "tis is my selected store inside selectefSto inside the useeffect",
+      selectedStore
+    )
+
+    const currentDate = new Date() // Get the current date and time
+    const currentDateStr = currentDate.toISOString().split("T")[0]
+
     const fetchSupabaseData = async () => {
       try {
+        console.log(currentDateStr)
         toast.loading("Loading...")
         setSupabaseData([])
         const { data, error } = await supabase
@@ -63,22 +72,20 @@ export default function ChooseContentAdmin({
       }
     }
 
-    if (selectedStore === null) {
+    if (selectedStore === null || supabaseData.length !== 0) {
       return
     }
 
     fetchSupabaseData()
-  }, [selectedStore, supabase, setSupabaseData])
-
-  console.log("images and store", supabaseData, selectedStore)
+  }, [])
 
   useEffect(() => {
     if (supabaseData) {
       setSelected(supabaseData)
     }
-  }, [supabaseData, setSelected])
+  }, [supabaseData])
 
-  console.log("selected", selected)
+  console.log("this is my supabasedata", supabaseData)
 
   return (
     <div>
@@ -90,7 +97,9 @@ export default function ChooseContentAdmin({
             <p className="flex hover:cursor-pointer justify-between items-center mb-4 mx-4">
               <button
                 type="button"
-                onClick={() => window.location.href = `${location.origin}/dashboard`}
+                onClick={() =>
+                  (window.location.href = `${location.origin}/dashboard`)
+                }
                 className="rounded bg-white px-2 py-1 border-kolas text-medium font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 flex justify-end"
               >
                 Dashboard
@@ -104,6 +113,7 @@ export default function ChooseContentAdmin({
               </button>
             </p>{" "}
           </p>
+
           <div className="flex items-start sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
             <ModalSignOut
               open={open}
@@ -114,46 +124,44 @@ export default function ChooseContentAdmin({
               <div>
                 <div>
                   <div className="text-center">
-                    <p className=" font-medium">Which store are you in?</p>
+                    <p className=" font-medium">
+                      {supabaseData.length === 0
+                        ? "You currently have no content in the following store"
+                        : "You're currently visualizing content in"}
+                    </p>
                     <div className="mt-2">
-                      <label
-                        htmlFor="stores"
-                        className="block mb-3 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Select the store you want to visualize your content from
-                      </label>
-                      <select
+                      <div
                         id="stores"
-                        className="bg-gray-50 text-center border hover:cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        onChange={(event) =>
-                          setSelectedStore(event.target.value)
-                        }
-                        value={selectedStore || ""}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        value={selectedStore}
                       >
-                        {selectedStore === null && (
-                          <option value="">Choose a store...</option>
+                        {userEmail === "kolas@blumenfeld.com" && (
+                          <option value="Kolas Blumenfeld">
+                            Kolas Blumenfeld
+                          </option>
                         )}
-                        {userEmail === "kolas@admin.com" && (
-                          <>
-                            <option value="Kolas Blumenfeld">
-                              Kolas Blumenfeld
-                            </option>
-                            <option value="Kolas Main Ave">
-                              Kolas Main Ave
-                            </option>
-                            <option value="Kolas Fruitridge - 66">
-                              Kolas Fruitridge - 66
-                            </option>
-                            <option value="Kolas Florin Perkins">
-                              Kolas Florin Perkins
-                            </option>
-                            <option value="Kolas Fruitridge - South Watt">
-                              Kolas Fruitridge - South Watt
-                            </option>
-                            <option value="Kolas Arden">Kolas Arden</option>
-                          </>
+                        {userEmail === "kolas@mainave.com" && (
+                          <option value="Kolas Main Ave">Kolas Main Ave</option>
                         )}
-                      </select>
+                        {userEmail === "kolas@fruitridge66.com" && (
+                          <option value="Kolas Fruitridge - 66">
+                            Kolas Fruitridge - 66
+                          </option>
+                        )}
+                        {userEmail === "kolas@florin.com" && (
+                          <option value="Kolas Florin Perkins">
+                            Kolas Florin Perkins
+                          </option>
+                        )}
+                        {userEmail === "kolas@fruitridgesouth.com" && (
+                          <option value="Kolas Fruitridge - South Watt">
+                            Kolas Fruitridge - South Watt
+                          </option>
+                        )}
+                        {userEmail === "kolas@arden.com" && (
+                          <option value="Kolas Arden">Kolas Arden</option>
+                        )}
+                      </div>
                     </div>
                     <div className="absolute top-0 right-0 pt-4 pr-4 sm:block ">
                       <button
@@ -166,7 +174,6 @@ export default function ChooseContentAdmin({
 
                     {supabaseData.length === 0 ? (
                       <p className=" font-medium  text-center mt-5">
-                        Currently no content in this store, go{" "}
                         <button
                           type="button"
                           onClick={() => window.location.replace("/upload")}
@@ -177,7 +184,7 @@ export default function ChooseContentAdmin({
                       </p>
                     ) : (
                       <p className=" font-medium  text-center mt-5">
-                        Or else{" "}
+                        You can also{" "}
                         <button
                           type="button"
                           onClick={() => window.location.replace("/upload")}
@@ -185,7 +192,7 @@ export default function ChooseContentAdmin({
                         >
                           Upload
                         </button>{" "}
-                        more content
+                        more content in that store
                       </p>
                     )}
 
